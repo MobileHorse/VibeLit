@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:vibelit/config/styles.dart';
+import 'package:vibelit/screen/on_off_screen.dart';
 import 'package:vibelit/widget/button/icon_circle_button.dart';
 import 'package:vibelit/widget/button/phone_button.dart';
 import 'package:vibelit/widget/button/stop_button.dart';
@@ -79,7 +80,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               size: 24,
                               color: Styles.primaryGrey,
                             ),
-                            onClick: () {},
+                            onClick: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => OnOffScreen(),));
+                            },
                             size: 24,
                           )
                         ],
