@@ -1,5 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:vibelit/api/weather_api.dart';
+import 'package:vibelit/bloc/weather_bloc/bloc.dart';
+import 'package:vibelit/config/application.dart';
 import 'package:vibelit/config/styles.dart';
 import 'package:vibelit/screen/air_purification_screen.dart';
 import 'package:vibelit/screen/on_off_screen.dart';
@@ -17,6 +23,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Image.asset(
               'assets/images/home.png',
               width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height*7 / 12,
+              height: MediaQuery.of(context).size.height * 7 / 12,
               fit: BoxFit.fill,
             ),
           ),
@@ -83,7 +95,11 @@ class _HomeScreenState extends State<HomeScreen> {
                               color: Styles.primaryGrey,
                             ),
                             onClick: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => OnOffScreen(),));
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => OnOffScreen(),
+                                  ));
                             },
                             size: 24,
                           )
@@ -93,41 +109,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   Align(
                     alignment: Alignment.center,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          "Milano, Italia",
-                          style: TextStyle(color: Styles.primaryGrey, fontSize: 16, fontFamily: 'Montserrat'),
-                        ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              "15.6",
-                              style: TextStyle(color: Styles.primaryGrey, fontSize: 52, fontFamily: 'Montserrat'),
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Text(
-                              "\u2103",
-                              style: TextStyle(color: Styles.primaryGrey, fontSize: 36, fontFamily: 'Montserrat'),
-                            ),
-                          ],
-                        ),
-                        BoxedIcon(
-                          WeatherIcons.rain,
-                          size: 40,
-                          color: Styles.primaryGrey,
-                        ),
-                      ],
-                    ),
+                    child: buildWeather()
                   )
                 ],
               )),
-              Expanded(child: Column(
+              Expanded(
+                  child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -139,31 +126,45 @@ class _HomeScreenState extends State<HomeScreen> {
                         "Mode selected",
                         style: TextStyle(color: Styles.primaryGrey, fontSize: 12, fontFamily: 'Montserrat'),
                       ),
-                      SizedBox(height: 6,),
+                      SizedBox(
+                        height: 6,
+                      ),
                       Text(
                         "ODOUR REMOUVAL",
                         style: TextStyle(color: Styles.primaryGreen, fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'Montserrat'),
                       ),
-                      SizedBox(height: 10,),
+                      SizedBox(
+                        height: 10,
+                      ),
                       Text(
                         "Air quality",
                         style: TextStyle(color: Styles.primaryGrey, fontSize: 12, fontFamily: 'Montserrat'),
                       ),
-                      SizedBox(height: 6,),
+                      SizedBox(
+                        height: 6,
+                      ),
                       AirQualityBar(
                         width: 200,
                         height: 28,
-                        initialPercent: 10,
-                        onChange: (value) {
-
+                        percent: 10,
+                        onClick: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ParameterScreen(),
+                              ));
                         },
                       ),
-                      SizedBox(height: 10,),
+                      SizedBox(
+                        height: 10,
+                      ),
                       Text(
                         "filter status",
                         style: TextStyle(color: Styles.primaryGrey, fontSize: 12, fontFamily: 'Montserrat'),
                       ),
-                      SizedBox(height: 6,),
+                      SizedBox(
+                        height: 6,
+                      ),
                       ProgressBar(
                         width: 200,
                         height: 28,
@@ -173,7 +174,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 20,),
+                  SizedBox(
+                    height: 20,
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -181,25 +184,88 @@ class _HomeScreenState extends State<HomeScreen> {
                         width: 80,
                         height: 80,
                         onClick: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => AirPurificationScreen(),));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AirPurificationScreen(),
+                              ));
                         },
                       ),
                       PhoneButton(
                         width: 80,
                         height: 80,
                         onClick: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => ParameterScreen(),));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => OnOffScreen(),
+                              ));
                         },
                       )
                     ],
                   ),
-                  SizedBox(height: 30,),
+                  SizedBox(
+                    height: 30,
+                  ),
                 ],
               )),
             ],
           )
         ],
       ),
+    );
+  }
+
+  Widget buildWeather() {
+    return BlocBuilder<WeatherBloc, WeatherState>(
+        builder: (context, state) {
+          if (state is WeatherLoadingState) {
+            return CircularProgressIndicator();
+          } else if (state is WeatherFailedState) {
+            return Text("Cannot load weather");
+          } else {
+            String city = (state as WeatherFetchedState).city;
+            String icon = (state as WeatherFetchedState).icon;
+            double temperature = (state as WeatherFetchedState).temperature;
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  city,
+                  style: TextStyle(color: Styles.primaryGrey, fontSize: 16, fontFamily: 'Montserrat'),
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      temperature.toStringAsFixed(1),
+                      style: TextStyle(color: Styles.primaryGrey, fontSize: 52, fontFamily: 'Montserrat'),
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Text(
+                      "\u2103",
+                      style: TextStyle(color: Styles.primaryGrey, fontSize: 36, fontFamily: 'Montserrat'),
+                    ),
+                  ],
+                ),
+                icon != null
+                    ? Image.network(
+                  "http://openweathermap.org/img/w/" + icon + ".png",
+                  width: 60,
+                  color: Styles.primaryGrey,
+                )
+                    : BoxedIcon(
+                  WeatherIcons.sunrise,
+                  size: 40,
+                  color: Styles.primaryGrey,
+                ),
+              ],
+            );
+          }
+        },
     );
   }
 }

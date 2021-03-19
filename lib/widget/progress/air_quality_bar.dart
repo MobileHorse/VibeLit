@@ -5,24 +5,16 @@ import 'package:vibelit/widget/button/icon_circle_button.dart';
 
 class AirQualityBar extends StatefulWidget {
 
-  final double width, initialPercent, height;
-  final Function(double) onChange;
+  final double width, percent, height;
+  final VoidCallback onClick;
 
-  AirQualityBar({this.width, this.initialPercent, this.height, this.onChange});
+  AirQualityBar({this.width, this.percent, this.height, this.onClick});
 
   @override
   _AirQualityBarState createState() => _AirQualityBarState();
 }
 
 class _AirQualityBarState extends State<AirQualityBar> {
-
-  double percent;
-
-  @override
-  void initState() {
-    super.initState();
-    percent = widget.initialPercent;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +30,7 @@ class _AirQualityBarState extends State<AirQualityBar> {
           Align(
             alignment: Alignment.centerLeft,
             child: Container(
-              width: widget.width * percent / 100,
+              width: widget.width * widget.percent / 100,
               height: widget.height,
               decoration: BoxDecoration(
                   color: Color(0xFFa1c6f1),
@@ -62,14 +54,7 @@ class _AirQualityBarState extends State<AirQualityBar> {
               icon: Icon(Icons.add, size: widget.height*2/3,),
               padding: widget.height/6,
               size: widget.height,
-              onClick: () {
-                if (percent < 100) {
-                  setState(() {
-                    percent += 1;
-                  });
-                  widget.onChange(percent);
-                }
-              },
+              onClick: () => widget.onClick(),
             ),
           )
         ],

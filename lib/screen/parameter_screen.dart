@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vibelit/bloc/weather_bloc/bloc.dart';
 import 'package:vibelit/config/styles.dart';
 import 'package:vibelit/widget/button/icon_circle_button.dart';
 import 'package:vibelit/widget/graph_widget.dart';
@@ -57,32 +59,7 @@ class _ParameterScreenState extends State<ParameterScreen> {
             ),
           ),
           Expanded(child: Container()),
-          Text(
-            "Milano, Italia",
-            style: TextStyle(color: Colors.white, fontSize: 16, fontFamily: 'Montserrat'),
-          ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                "15.6",
-                style: TextStyle(color: Colors.white, fontSize: 52, fontFamily: 'Montserrat'),
-              ),
-              SizedBox(
-                width: 10,
-              ),
-              Text(
-                "\u2103",
-                style: TextStyle(color: Colors.white, fontSize: 36, fontFamily: 'Montserrat'),
-              ),
-            ],
-          ),
-          BoxedIcon(
-            WeatherIcons.rain,
-            size: 40,
-            color: Colors.white,
-          ),
+          buildWeather(),
           Expanded(child: Container()),
           Text(
             "Air quality parameters",
@@ -116,6 +93,59 @@ class _ParameterScreenState extends State<ParameterScreen> {
           Expanded(child: Container()),
         ],
       ),
+    );
+  }
+
+  Widget buildWeather() {
+    return BlocBuilder<WeatherBloc, WeatherState>(
+      builder: (context, state) {
+        if (state is WeatherLoadingState) {
+          return CircularProgressIndicator();
+        } else if (state is WeatherFailedState) {
+          return Text("Cannot load weather");
+        } else {
+          String city = (state as WeatherFetchedState).city;
+          String icon = (state as WeatherFetchedState).icon;
+          double temperature = (state as WeatherFetchedState).temperature;
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                city,
+                style: TextStyle(color: Colors.white, fontSize: 16, fontFamily: 'Montserrat'),
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    temperature.toStringAsFixed(1),
+                    style: TextStyle(color: Colors.white, fontSize: 52, fontFamily: 'Montserrat'),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Text(
+                    "\u2103",
+                    style: TextStyle(color: Colors.white, fontSize: 36, fontFamily: 'Montserrat'),
+                  ),
+                ],
+              ),
+              icon != null
+                  ? Image.network(
+                "http://openweathermap.org/img/w/" + icon + ".png",
+                width: 60,
+                color: Colors.white,
+              )
+                  : BoxedIcon(
+                WeatherIcons.sunrise,
+                size: 40,
+                color: Colors.white,
+              ),
+            ],
+          );
+        }
+      },
     );
   }
 }

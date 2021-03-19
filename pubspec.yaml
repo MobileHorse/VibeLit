@@ -21,6 +21,8 @@ dependencies:
   path_provider: ^1.6.18
   dio: ^3.0.10
   weather_icons: ^2.0.2
+  geolocator: ^5.3.2+2
+  http: ^0.12.2
 
 dev_dependencies:
   flutter_test:
