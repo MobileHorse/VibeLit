@@ -1,13 +1,16 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vibelit/bloc/bloc.dart';
 import 'package:vibelit/config/styles.dart';
-import 'package:vibelit/screen/air_purification_screen.dart';
 import 'package:vibelit/screen/menu_screen.dart';
 import 'package:vibelit/screen/on_off_screen.dart';
 import 'package:vibelit/screen/parameter_screen.dart';
+import 'package:vibelit/screen/stop_air_purification_screen.dart';
+import 'package:vibelit/util/time_utils.dart';
 import 'package:vibelit/widget/button/icon_circle_button.dart';
 import 'package:vibelit/widget/button/phone_button.dart';
 import 'package:vibelit/widget/button/stop_button.dart';
@@ -22,9 +25,16 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
+  Timer timer;
+  PurificationBloc _purificationBloc;
+
   @override
   void initState() {
     super.initState();
+    _purificationBloc = BlocProvider.of<PurificationBloc>(context);
+    timer = Timer.periodic(Duration(seconds: 10), (Timer t) {
+      _purificationBloc.add(PurificationStatusEvent());
+    });
   }
 
   @override
@@ -87,9 +97,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   Align(
-                    alignment: Alignment.center,
-                    child: buildWeather()
-                  )
+                      alignment: Alignment.center,
+                      child: BlocBuilder<PurificationBloc, PurificationState>(
+                        builder: (context, state) {
+                          if (state is PurificationInProgressState) return buildPurification();
+                          else if (state is PurificationLoadingState) return Container();
+                          else return buildWeather();
+                        },
+                      ))
                 ],
               )),
               Expanded(
@@ -191,82 +206,129 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget buildWeather() {
     return BlocBuilder<WeatherBloc, WeatherState>(
-        builder: (context, state) {
-          if (state is WeatherLoadingState) {
-            return CircularProgressIndicator();
-          } else if (state is WeatherFailedState) {
-            return Text("Cannot load weather");
-          } else {
-            String city = (state as WeatherFetchedState).city;
-            String icon = (state as WeatherFetchedState).icon;
-            double temperature = (state as WeatherFetchedState).temperature;
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  city,
-                  style: TextStyle(color: Styles.primaryGrey, fontSize: 16, fontFamily: 'Montserrat'),
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      temperature.toStringAsFixed(1),
-                      style: TextStyle(color: Styles.primaryGrey, fontSize: 52, fontFamily: 'Montserrat'),
+      builder: (context, state) {
+        if (state is WeatherLoadingState) {
+          return CircularProgressIndicator();
+        } else if (state is WeatherFailedState) {
+          return Text("Cannot load weather");
+        } else {
+          String city = (state as WeatherFetchedState).city;
+          String icon = (state as WeatherFetchedState).icon;
+          double temperature = (state as WeatherFetchedState).temperature;
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                city,
+                style: TextStyle(color: Styles.primaryGrey, fontSize: 16, fontFamily: 'Montserrat'),
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    temperature.toStringAsFixed(1),
+                    style: TextStyle(color: Styles.primaryGrey, fontSize: 52, fontFamily: 'Montserrat'),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Text(
+                    "\u2103",
+                    style: TextStyle(color: Styles.primaryGrey, fontSize: 36, fontFamily: 'Montserrat'),
+                  ),
+                ],
+              ),
+              icon != null
+                  ? Image.network(
+                      "http://openweathermap.org/img/w/" + icon + ".png",
+                      width: 60,
+                      color: Styles.primaryGrey,
+                    )
+                  : BoxedIcon(
+                      WeatherIcons.sunrise,
+                      size: 40,
+                      color: Styles.primaryGrey,
                     ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Text(
-                      "\u2103",
-                      style: TextStyle(color: Styles.primaryGrey, fontSize: 36, fontFamily: 'Montserrat'),
-                    ),
-                  ],
-                ),
-                icon != null
-                    ? Image.network(
-                  "http://openweathermap.org/img/w/" + icon + ".png",
-                  width: 60,
-                  color: Styles.primaryGrey,
-                )
-                    : BoxedIcon(
-                  WeatherIcons.sunrise,
-                  size: 40,
-                  color: Styles.primaryGrey,
-                ),
-              ],
-            );
-          }
-        },
+            ],
+          );
+        }
+      },
     );
   }
 
   Widget buildStatus() {
     return BlocBuilder<StatusBloc, StatusState>(
-        builder: (context, state) {
-          bool status = state is StatusOnState;
-          return Row(
+      builder: (context, state) {
+        bool status = state is StatusOnState;
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 10,
+              height: 10,
+              decoration: new BoxDecoration(
+                color: status ? Colors.green : Colors.grey,
+                shape: BoxShape.circle,
+              ),
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Text(
+              status ? "ON" : "OFF",
+              style: TextStyle(fontSize: 10, color: Styles.primaryGrey),
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  Widget buildPurification() {
+    return TextButton(
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => StopAirPurificationScreen(),));
+        },
+        style: TextButton.styleFrom(
+          padding: const EdgeInsets.all(10),
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(32))),
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(30),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(32), color: Styles.bgYellow),
+          child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                width: 10,
-                height: 10,
-                decoration: new BoxDecoration(
-                  color: status ? Colors.green : Colors.grey,
-                  shape: BoxShape.circle,
-                ),
+              Text(
+                "PROGRAM\nUNDER WAY",
+                style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20, fontFamily: 'Montserrat'),
+                textAlign: TextAlign.center,
               ),
               SizedBox(
-                width: 10,
+                height: 20,
               ),
               Text(
-                status ? "ON" : "OFF",
-                style: TextStyle(fontSize: 10, color: Styles.primaryGrey),
-              )
+                "Time remaining",
+                style: TextStyle(color: Colors.black, fontSize: 14, fontFamily: 'Montserrat'),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(
+                height: 8,
+              ),
+              TextButton(
+                child: Text(
+                  "${TimeUtils.calculateRemainedTimeInMinutes()} min",
+                  style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'Montserrat'),
+                ),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  backgroundColor: Colors.white.withOpacity(0.1),
+                  shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(32))),
+                ),
+              ),
             ],
-          );
-        },
-    );
+          ),
+        ));
   }
 }

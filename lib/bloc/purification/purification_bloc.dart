@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vibelit/bloc/purification/bloc.dart';
 import 'package:vibelit/config/params.dart';
 import 'package:vibelit/util/preference_helper.dart';
+import 'package:vibelit/util/time_utils.dart';
 
 class PurificationBloc extends Bloc<PurificationEvent, PurificationState> {
   PurificationBloc() : super(PurificationStoppedState());
@@ -18,9 +19,8 @@ class PurificationBloc extends Bloc<PurificationEvent, PurificationState> {
   }
 
   Stream<PurificationState> _mapPurificationStatusEventToState() async* {
-    DateTime startTime = PreferenceHelper.getDate(Params.purificationStartedTime);
-    if (startTime == null) yield PurificationStoppedState();
-    else if (DateTime.now().difference(startTime).inMinutes > 19) yield PurificationStoppedState();
+    yield PurificationLoadingState();
+    if (TimeUtils.calculateRemainedTimeInMinutes() < 0) yield PurificationStoppedState();
     else yield PurificationInProgressState();
   }
 

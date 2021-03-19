@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vibelit/bloc/bloc.dart';
 import 'package:vibelit/config/params.dart';
 import 'package:vibelit/config/styles.dart';
 import 'package:vibelit/screen/stop_air_purification_screen.dart';
@@ -11,6 +13,15 @@ class AirPurificationScreen extends StatefulWidget {
 }
 
 class _AirPurificationScreenState extends State<AirPurificationScreen> {
+
+  PurificationBloc _purificationBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _purificationBloc = BlocProvider.of<PurificationBloc>(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -127,6 +138,7 @@ class _AirPurificationScreenState extends State<AirPurificationScreen> {
               shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(32))),
             ),
             onPressed: () {
+              _purificationBloc.add(PurificationStartEvent());
               Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => StopAirPurificationScreen(),));
             },
           ),

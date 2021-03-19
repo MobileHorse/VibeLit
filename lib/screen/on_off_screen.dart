@@ -5,6 +5,7 @@ import 'package:vibelit/config/params.dart';
 import 'package:vibelit/config/styles.dart';
 import 'package:vibelit/screen/parameter_screen.dart';
 import 'package:vibelit/screen/parameter_setting.dart';
+import 'package:vibelit/screen/stop_air_purification_screen.dart';
 import 'package:vibelit/util/preference_helper.dart';
 import 'package:vibelit/widget/button/feature_button.dart';
 import 'package:vibelit/widget/button/icon_circle_button.dart';
@@ -142,11 +143,20 @@ class _OnOffScreenState extends State<OnOffScreen> {
                 caption: "Air",
                 asset: "assets/images/ic_air.png",
                 onClick: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AirPurificationScreen(),
-                      ));
+                  PurificationBloc puriBloc = BlocProvider.of<PurificationBloc>(context);
+                  if (puriBloc.state is PurificationInProgressState) {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => StopAirPurificationScreen(),
+                        ));
+                  } else {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AirPurificationScreen(),
+                        ));
+                  }
                 },
               ),
               SizedBox(

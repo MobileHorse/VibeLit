@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vibelit/bloc/bloc.dart';
 import 'package:vibelit/config/styles.dart';
-import 'package:vibelit/screen/air_purification_screen.dart';
+import 'package:vibelit/util/time_utils.dart';
 import 'package:vibelit/widget/button/icon_circle_button.dart';
 
 class StopAirPurificationScreen extends StatefulWidget {
@@ -10,6 +12,15 @@ class StopAirPurificationScreen extends StatefulWidget {
 }
 
 class _StopAirPurificationScreenState extends State<StopAirPurificationScreen> {
+
+  PurificationBloc _purificationBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _purificationBloc = BlocProvider.of<PurificationBloc>(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,16 +67,29 @@ class _StopAirPurificationScreenState extends State<StopAirPurificationScreen> {
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 10,),
-          TextButton(
-            child: Text(
-              "20 min",
-              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20, fontFamily: 'Montserrat'),
-            ),
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-              backgroundColor: Colors.white.withOpacity(0.1),
-              shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(32))),
-            ),
+          BlocBuilder<PurificationBloc, PurificationState>(
+              builder: (context, state) {
+                if (state is PurificationInProgressState) {
+                  return TextButton(
+                    child: Text(
+                      "${TimeUtils.calculateRemainedTimeInMinutes()} min",
+                      style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20, fontFamily: 'Montserrat'),
+                    ),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                      backgroundColor: Colors.white.withOpacity(0.1),
+                      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(32))),
+                    ),
+                  );
+                } else if (state is PurificationLoadingState) {
+                  return Container();
+                } else {
+                  WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                    Navigator.pop(context);
+                  });
+                  return Container();
+                }
+              },
           ),
           Expanded(child: Container()),
           TextButton(
@@ -79,6 +103,7 @@ class _StopAirPurificationScreenState extends State<StopAirPurificationScreen> {
               shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(32))),
             ),
             onPressed: () {
+              _purificationBloc.add(PurificationStopEvent());
               Navigator.pop(context);
             },
           ),
