@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:vibelit/config/params.dart';
 import 'package:vibelit/config/styles.dart';
 import 'package:vibelit/screen/stop_air_purification_screen.dart';
+import 'package:vibelit/util/preference_helper.dart';
 import 'package:vibelit/widget/button/icon_circle_button.dart';
 
 class AirPurificationScreen extends StatefulWidget {
@@ -68,7 +70,7 @@ class _AirPurificationScreenState extends State<AirPurificationScreen> {
                 Expanded(
                   child: Center(
                     child: Text(
-                      "3",
+                      PreferenceHelper.getInt(Params.intensity).toString(),
                       style: TextStyle(color: Colors.white, fontSize: 24, fontFamily: 'Montserrat'),
                     ),
                   ),
@@ -81,7 +83,7 @@ class _AirPurificationScreenState extends State<AirPurificationScreen> {
                 Expanded(
                   child: Center(
                     child: Text(
-                      "350",
+                      PreferenceHelper.getInt(Params.volume).toString(),
                       style: TextStyle(color: Colors.white, fontSize: 24, fontFamily: 'Montserrat'),
                     ),
                   ),

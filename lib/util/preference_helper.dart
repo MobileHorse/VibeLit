@@ -41,7 +41,7 @@ class PreferenceHelper {
   }
 
   static int getInt(String key) {
-    return Application.preferences.getInt(key);
+    return Application.preferences.getInt(key) ?? 0;
   }
 
   static Future<bool> setDate(String key, DateTime value) {
