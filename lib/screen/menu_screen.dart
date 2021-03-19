@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
 import 'package:vibelit/config/styles.dart';
+import 'package:vibelit/screen/info_screen.dart';
 import 'package:vibelit/widget/button/icon_circle_button.dart';
 import 'package:vibelit/widget/card_container.dart';
 
@@ -46,7 +47,7 @@ class _MenuScreenState extends State<MenuScreen> {
                     icon: Icon(
                       Icons.clear,
                       size: 24,
-                      color: Colors.black,
+                      color: Styles.txtColor,
                     ),
                     onClick: () {
                       Navigator.pop(context);
@@ -66,7 +67,9 @@ class _MenuScreenState extends State<MenuScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => InfoScreen(),));
+                          },
                           child: Text(
                             " PIÙ  INFO ",
                             style: TextStyle(color: Styles.txtColor, fontSize: 24, decoration: TextDecoration.underline, fontFamily: 'Montserrat'),

@@ -10,6 +10,8 @@ import 'package:vibelit/widget/button/feature_button.dart';
 import 'package:vibelit/widget/button/icon_circle_button.dart';
 import 'package:vibelit/widget/switch/switch.dart';
 
+import 'air_purification_screen.dart';
+
 class OnOffScreen extends StatefulWidget {
   @override
   _OnOffScreenState createState() => _OnOffScreenState();
@@ -139,7 +141,13 @@ class _OnOffScreenState extends State<OnOffScreen> {
               FeatureButton(
                 caption: "Air",
                 asset: "assets/images/ic_air.png",
-                onClick: () {},
+                onClick: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AirPurificationScreen(),
+                      ));
+                },
               ),
               SizedBox(
                 width: 30,

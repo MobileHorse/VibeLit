@@ -162,13 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       StopButton(
                         width: 80,
                         height: 80,
-                        onClick: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => AirPurificationScreen(),
-                              ));
-                        },
+                        onClick: () {},
                       ),
                       PhoneButton(
                         width: 80,

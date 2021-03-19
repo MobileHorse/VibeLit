@@ -24,26 +24,7 @@ class _ParameterScreenState extends State<ParameterScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 10,
-                      height: 10,
-                      decoration: new BoxDecoration(
-                        color: Colors.green,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Text(
-                      "ON",
-                      style: TextStyle(fontSize: 10, color: Colors.white),
-                    )
-                  ],
-                ),
+                buildStatus(),
                 IconCircleButton(
                   icon: Icon(
                     Icons.close,
@@ -145,6 +126,34 @@ class _ParameterScreenState extends State<ParameterScreen> {
             ],
           );
         }
+      },
+    );
+  }
+
+  Widget buildStatus() {
+    return BlocBuilder<StatusBloc, StatusState>(
+      builder: (context, state) {
+        bool status = state is StatusOnState;
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 10,
+              height: 10,
+              decoration: new BoxDecoration(
+                color: status ? Colors.green : Colors.grey,
+                shape: BoxShape.circle,
+              ),
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Text(
+              status ? "ON" : "OFF",
+              style: TextStyle(fontSize: 10, color: Colors.white),
+            )
+          ],
+        );
       },
     );
   }
