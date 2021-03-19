@@ -2,10 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:vibelit/api/weather_api.dart';
-import 'package:vibelit/bloc/weather_bloc/bloc.dart';
-import 'package:vibelit/config/application.dart';
+import 'package:vibelit/bloc/bloc.dart';
 import 'package:vibelit/config/styles.dart';
 import 'package:vibelit/screen/air_purification_screen.dart';
 import 'package:vibelit/screen/on_off_screen.dart';
@@ -68,26 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Container(
-                                width: 10,
-                                height: 10,
-                                decoration: new BoxDecoration(
-                                  color: Colors.green,
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              Text(
-                                "ON",
-                                style: TextStyle(fontSize: 10, color: Styles.primaryGrey),
-                              )
-                            ],
-                          ),
+                          buildStatus(),
                           IconCircleButton(
                             icon: Icon(
                               Icons.menu,
@@ -265,6 +243,34 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             );
           }
+        },
+    );
+  }
+
+  Widget buildStatus() {
+    return BlocBuilder<StatusBloc, StatusState>(
+        builder: (context, state) {
+          bool status = state is StatusOnState;
+          return Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 10,
+                height: 10,
+                decoration: new BoxDecoration(
+                  color: status ? Colors.green : Colors.grey,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              Text(
+                status ? "ON" : "OFF",
+                style: TextStyle(fontSize: 10, color: Styles.primaryGrey),
+              )
+            ],
+          );
         },
     );
   }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:vibelit/bloc/weather_bloc/bloc.dart';
+import 'package:vibelit/bloc/bloc.dart';
 import 'package:vibelit/config/styles.dart';
 import 'package:vibelit/widget/button/icon_circle_button.dart';
 import 'package:vibelit/widget/graph_widget.dart';

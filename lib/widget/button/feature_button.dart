@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vibelit/bloc/bloc.dart';
 import 'package:vibelit/widget/button/icon_circle_button.dart';
 
 class FeatureButton extends StatefulWidget {
@@ -31,18 +33,27 @@ class _FeatureButtonState extends State<FeatureButton> {
                   color: Colors.white.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: IconCircleButton(
-                  icon: Image.asset(widget.asset, width: 40, height: 40, color: Color(0xFFc0cbd6),),
-                  size: 40,
-                  padding: 20,
-                  onClick: () => widget.onClick(),
+                child: BlocBuilder<StatusBloc, StatusState>(
+                  builder: (context, state) {
+                    return state is StatusOnState ? IconCircleButton(
+                      icon: Image.asset(widget.asset, width: 40, height: 40, color: Color(0xFFc0cbd6),),
+                      size: 40,
+                      padding: 20,
+                      onClick: () => widget.onClick(),
+                    ) : Container();
+                  },
                 ),
               ),
             ],
           ),
         ),
         SizedBox(height: 6,),
-        Text(widget.caption, style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 10, fontFamily: 'Montserrat'),)
+        BlocBuilder<StatusBloc, StatusState>(
+          builder: (context, state) {
+            return Text(state is StatusOnState ? widget.caption : " ", style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 10, fontFamily: 'Montserrat'),);
+          },
+        ),
+
       ],
     );
   }

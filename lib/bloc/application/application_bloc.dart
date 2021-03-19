@@ -1,9 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vibelit/bloc/app_bloc.dart';
-import 'package:vibelit/bloc/weather_bloc/bloc.dart';
 import 'package:vibelit/config/application.dart';
 
+import '../bloc.dart';
 import 'bloc.dart';
 
 class ApplicationBloc extends Bloc<ApplicationEvent, ApplicationState> {
@@ -24,6 +24,7 @@ class ApplicationBloc extends Bloc<ApplicationEvent, ApplicationState> {
     Application.preferences = await SharedPreferences.getInstance();
 
     AppBloc.weatherBloc.add(WeatherFetchEvent());
+    AppBloc.statusBloc.add(StatusCheckEvent());
 
     /// Application Setup Completed
     yield ApplicationSetupState();

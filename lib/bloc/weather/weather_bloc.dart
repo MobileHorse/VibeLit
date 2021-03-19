@@ -1,8 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:vibelit/api/weather_api.dart';
-import 'package:vibelit/bloc/weather_bloc/bloc.dart';
 import 'package:vibelit/config/application.dart';
+
+import 'bloc.dart';
 
 class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
   WeatherBloc() : super(WeatherLoadingState());

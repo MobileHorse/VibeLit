@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vibelit/bloc/bloc.dart';
+import 'package:vibelit/config/params.dart';
 import 'package:vibelit/config/styles.dart';
 import 'package:vibelit/screen/parameter_screen.dart';
 import 'package:vibelit/screen/parameter_setting.dart';
+import 'package:vibelit/util/preference_helper.dart';
 import 'package:vibelit/widget/button/feature_button.dart';
 import 'package:vibelit/widget/button/icon_circle_button.dart';
 import 'package:vibelit/widget/switch/switch.dart';
@@ -12,12 +16,15 @@ class OnOffScreen extends StatefulWidget {
 }
 
 class _OnOffScreenState extends State<OnOffScreen> {
+
   bool onOffValue;
+  StatusBloc _statusBloc;
 
   @override
   void initState() {
     super.initState();
-    onOffValue = false;
+    _statusBloc = BlocProvider.of<StatusBloc>(context);
+    onOffValue = PreferenceHelper.getBool(Params.status);
   }
 
   @override
@@ -75,6 +82,8 @@ class _OnOffScreenState extends State<OnOffScreen> {
               setState(() {
                 onOffValue = value;
               });
+              if (value) _statusBloc.add(StatusOnEvent());
+              else _statusBloc.add(StatusOffEvent());
             },
           ),
           SizedBox(height: 8,),
