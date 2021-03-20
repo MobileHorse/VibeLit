@@ -5,11 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vibelit/bloc/bloc.dart';
+import 'package:vibelit/config/constants.dart';
 import 'package:vibelit/config/styles.dart';
 import 'package:vibelit/screen/menu_screen.dart';
 import 'package:vibelit/screen/on_off_screen.dart';
+import 'package:vibelit/screen/operation_stop_screen.dart';
 import 'package:vibelit/screen/parameter_screen.dart';
-import 'package:vibelit/screen/stop_air_purification_screen.dart';
 import 'package:vibelit/util/time_utils.dart';
 import 'package:vibelit/widget/button/icon_circle_button.dart';
 import 'package:vibelit/widget/button/phone_button.dart';
@@ -26,14 +27,14 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
 
   Timer timer;
-  PurificationBloc _purificationBloc;
+  OperationBloc _operationBloc;
 
   @override
   void initState() {
     super.initState();
-    _purificationBloc = BlocProvider.of<PurificationBloc>(context);
+    _operationBloc = BlocProvider.of<OperationBloc>(context);
     timer = Timer.periodic(Duration(seconds: 10), (Timer t) {
-      _purificationBloc.add(PurificationStatusEvent());
+      _operationBloc.add(OperationStatusEvent());
     });
   }
 
@@ -98,10 +99,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   Align(
                       alignment: Alignment.center,
-                      child: BlocBuilder<PurificationBloc, PurificationState>(
+                      child: BlocBuilder<OperationBloc, OperationState>(
                         builder: (context, state) {
-                          if (state is PurificationInProgressState) return buildPurification();
-                          else if (state is PurificationLoadingState) return Container();
+                          if (state is OperationInProgressState) return buildOperation(state);
+                          else if (state is OperationLoadingState) return Container();
                           else return buildWeather();
                         },
                       ))
@@ -285,10 +286,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget buildPurification() {
+  Widget buildOperation(OperationInProgressState state) {
+    String mode = state.mode;
     return TextButton(
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => StopAirPurificationScreen(),));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => OperationStopScreen(),));
         },
         style: TextButton.styleFrom(
           padding: const EdgeInsets.all(10),
@@ -305,28 +307,33 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20, fontFamily: 'Montserrat'),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(
-                height: 20,
-              ),
-              Text(
-                "Time remaining",
-                style: TextStyle(color: Colors.black, fontSize: 14, fontFamily: 'Montserrat'),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(
-                height: 8,
-              ),
-              TextButton(
-                child: Text(
-                  "${TimeUtils.calculateRemainedTimeInMinutes()} min",
-                  style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'Montserrat'),
-                ),
-                style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  backgroundColor: Colors.white.withOpacity(0.1),
-                  shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(32))),
-                ),
-              ),
+              mode != Constants.Air_Purification ? Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    "Time remaining",
+                    style: TextStyle(color: Colors.black, fontSize: 14, fontFamily: 'Montserrat'),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  TextButton(
+                    child: Text(
+                      "${TimeUtils.calculateRemainedTimeInMinutes()} min",
+                      style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'Montserrat'),
+                    ),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      backgroundColor: Colors.white.withOpacity(0.1),
+                      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(32))),
+                    ),
+                  )
+                ],
+              ) : Container(),
             ],
           ),
         ));

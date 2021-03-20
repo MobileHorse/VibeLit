@@ -37,7 +37,17 @@ class OperationBloc extends Bloc<OperationEvent, OperationState> {
     }
   }
 
-  Stream<OperationState> _mapOperationStartEventToState(OperationStartEvent event) async* {}
+  Stream<OperationState> _mapOperationStartEventToState(OperationStartEvent event) async* {
+    String mode = event.mode;
+    DateTime startedAt = DateTime.now();
+    await PreferenceHelper.setString(Params.operationMode, mode);
+    await PreferenceHelper.setDate(Params.operationStartedAt, startedAt);
+    yield OperationInProgressState(mode: mode, startedAt: startedAt);
+  }
 
-  Stream<OperationState> _mapOperationStopEventToState() async* {}
+  Stream<OperationState> _mapOperationStopEventToState() async* {
+    await PreferenceHelper.remove(Params.operationMode);
+    await PreferenceHelper.remove(Params.operationStartedAt);
+    yield OperationStoppedState();
+  }
 }
