@@ -62,7 +62,7 @@ class _OperationStopScreenState extends State<OperationStopScreen> {
               ),
               SizedBox(height: 40,),
               Text(
-                "please don\'t enter\nthe room",
+                PreferenceHelper.getString(Params.operationMode) == Constants.Surface_Disinfection ? "please don\'t enter\nthe room" : "",
                 style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'Montserrat'),
                 textAlign: TextAlign.center,
               ),

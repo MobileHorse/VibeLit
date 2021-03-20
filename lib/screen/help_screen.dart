@@ -72,6 +72,15 @@ class _HelpScreenState extends State<HelpScreen> {
                   style: TextStyle(color: Colors.white, fontSize: 12, fontFamily: 'Montserrat'),
                   textAlign: TextAlign.center,
                 ),
+                SizedBox(height: 30,),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 60),
+                  child: Text(
+                    "Set the intensity from 1 to 5 to increase the ions production during Air Purification mode or make a longer Odour Removal program.\nIncreasing the intensity values also increases the air flow rate of the product",
+                    style: TextStyle(color: Colors.white, fontSize: 14, fontFamily: 'Montserrat'),
+                    textAlign: TextAlign.center,
+                  )
+                ),
               ],
             ),
           )

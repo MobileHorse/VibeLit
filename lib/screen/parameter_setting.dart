@@ -84,7 +84,7 @@ class _ParameterSettingScreenState extends State<ParameterSettingScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(padding: const EdgeInsets.only(left: 20), child: Text(
-                "INTENSITY(Set the intensity from 1 to 5 to increase the ions production during Air Purification mode or make a longer Odour Removal program. Increasing the intensity values also increases the air flow rate of the product)",
+                "INTENSITY",
                 style: TextStyle(color: Colors.white, fontSize: 12, fontFamily: 'Montserrat'),
               ),),
               SizedBox(height: 12,),
