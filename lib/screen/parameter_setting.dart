@@ -186,7 +186,13 @@ class _ParameterSettingScreenState extends State<ParameterSettingScreen> {
                           PreferenceHelper.setInt(Params.intensity, intensity);
                           ToastUtils.showSuccessToast(context, "The data has been saved");
                         } else {
-                          ToastUtils.showErrorToast(context, "Volume value must be between 100 and 5000");
+                          String volumeError = "";
+                          if (int.parse(volumeController.text) < 100) {
+                            volumeError = "Volume value too low";
+                          } else {
+                            volumeError = "Volume value too high";
+                          }
+                          ToastUtils.showErrorToast(context, volumeError);
                         }
                       },
                     ),

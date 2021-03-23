@@ -114,6 +114,13 @@
             </list>
           </value>
         </entry>
+        <entry key="flutter_bluetooth_serial">
+          <value>
+            <list>
+              <option value="$PROJECT_DIR$/../../../Tools/SDK/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_bluetooth_serial-0.2.2/lib" />
+            </list>
+          </value>
+        </entry>
         <entry key="flutter_cubit">
           <value>
             <list>
@@ -454,6 +461,7 @@
       <root url="file://$PROJECT_DIR$/../../../Tools/SDK/flutter/.pub-cache/hosted/pub.dartlang.org/ffi-1.0.0/lib" />
       <root url="file://$PROJECT_DIR$/../../../Tools/SDK/flutter/.pub-cache/hosted/pub.dartlang.org/file-6.1.0/lib" />
       <root url="file://$PROJECT_DIR$/../../../Tools/SDK/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_bloc-5.0.1/lib" />
+      <root url="file://$PROJECT_DIR$/../../../Tools/SDK/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_bluetooth_serial-0.2.2/lib" />
       <root url="file://$PROJECT_DIR$/../../../Tools/SDK/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_cubit-0.1.1/lib" />
       <root url="file://$PROJECT_DIR$/../../../Tools/SDK/flutter/.pub-cache/hosted/pub.dartlang.org/fluttertoast-6.0.1/lib" />
       <root url="file://$PROJECT_DIR$/../../../Tools/SDK/flutter/.pub-cache/hosted/pub.dartlang.org/geolocator-5.3.2+2/lib" />
