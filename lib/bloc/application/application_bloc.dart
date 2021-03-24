@@ -34,6 +34,7 @@ class ApplicationBloc extends Bloc<ApplicationEvent, ApplicationState> {
     AppBloc.weatherBloc.add(WeatherFetchEvent());
     AppBloc.statusBloc.add(StatusCheckEvent());
     AppBloc.operationBloc.add(OperationStatusEvent());
+    AppBloc.bluetoothBloc.add(BluetoothCheckEvent());
 
     /// Application Setup Completed
     yield ApplicationSetupState();
