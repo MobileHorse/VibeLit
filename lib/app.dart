@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vibelit/screen/bluetooth_pair_screen.dart';
 
 import 'bloc/app_bloc.dart';
 import 'bloc/bloc.dart';
@@ -50,7 +51,13 @@ class _VibeLitAppState extends State<VibeLitApp> {
           home: BlocBuilder<ApplicationBloc, ApplicationState>(
             builder: (context, state) {
               if (state is ApplicationSetupState) {
-                return HomeScreen();
+                return BlocBuilder<BluetoothBloc, BluetoothAppState>(
+                    builder: (bleContext, bleState) {
+                      if (bleState is BluetoothPairState) {
+                        return BluetoothPairScreen();
+                      }
+                      return HomeScreen();
+                    });
               }
               return SplashScreen();
             },

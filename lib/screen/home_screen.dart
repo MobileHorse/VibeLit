@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:vibelit/bloc/bloc.dart';
 import 'package:vibelit/config/constants.dart';
 import 'package:vibelit/config/params.dart';
@@ -28,19 +30,52 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Timer timer;
+  Timer timer, bluetoothTimer;
   OperationBloc _operationBloc;
   DataBloc _dataBloc;
+  BluetoothBloc _bluetoothBloc;
 
   @override
   void initState() {
     super.initState();
     _operationBloc = BlocProvider.of<OperationBloc>(context);
     _dataBloc = BlocProvider.of<DataBloc>(context);
+    _bluetoothBloc = BlocProvider.of<BluetoothBloc>(context);
     timer = Timer.periodic(Duration(seconds: 10), (Timer t) {
       _operationBloc.add(OperationStatusEvent());
       _dataBloc.add(DataLoadEvent());
+      if (_bluetoothBloc.state is BluetoothConnectedState) {
+        BluetoothConnection connection = (_bluetoothBloc.state as BluetoothConnectedState).connection;
+        connection.input.listen((data) => _onDataReceived(data));
+      }
     });
+  }
+
+  void _onDataReceived(Uint8List data) {
+    // Allocate buffer for parsed data
+    int backspacesCounter = 0;
+    data.forEach((byte) {
+      if (byte == 8 || byte == 127) {
+        backspacesCounter++;
+      }
+    });
+    Uint8List buffer = Uint8List(data.length - backspacesCounter);
+    int bufferIndex = buffer.length;
+
+    // Apply backspace control character
+    backspacesCounter = 0;
+    for (int i = data.length - 1; i >= 0; i--) {
+      if (data[i] == 8 || data[i] == 127) {
+        backspacesCounter++;
+      } else {
+        if (backspacesCounter > 0) {
+          backspacesCounter--;
+        } else {
+          buffer[--bufferIndex] = data[i];
+        }
+      }
+    }
+    ToastUtils.showInfoToast(context, "Message from MicroController: " + String.fromCharCodes(data));
   }
 
   @override
