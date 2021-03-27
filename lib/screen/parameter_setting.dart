@@ -181,13 +181,13 @@ class _ParameterSettingScreenState extends State<ParameterSettingScreen> {
                         shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(32))),
                       ),
                       onPressed: () {
-                        if (int.parse(volumeController.text) > 99 && int.parse(volumeController.text) < 5001) {
+                        if (int.parse(volumeController.text) >= Constants.VOLUME_MIN && int.parse(volumeController.text) <= Constants.VOLUME_MAX) {
                           PreferenceHelper.setInt(Params.volume, int.parse(volumeController.text));
                           PreferenceHelper.setInt(Params.intensity, intensity);
                           ToastUtils.showSuccessToast(context, "The data has been saved");
                         } else {
                           String volumeError = "";
-                          if (int.parse(volumeController.text) < 100) {
+                          if (int.parse(volumeController.text) < Constants.VOLUME_MIN) {
                             volumeError = "Volume value too low";
                           } else {
                             volumeError = "Volume value too high";

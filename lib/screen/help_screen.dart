@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vibelit/config/constants.dart';
 import 'package:vibelit/config/styles.dart';
 import 'package:vibelit/widget/button/icon_circle_button.dart';
 
@@ -55,7 +56,7 @@ class _HelpScreenState extends State<HelpScreen> {
                 Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 60),
                     child: Text(
-                      "Set the intensity from 1 to 5 to increase the ions production during Air Purification mode or make a longer Odour Removal program.\nIncreasing the intensity values also increases the air flow rate of the product",
+                      "Set the intensity from ${Constants.INTENSITY_MIN} to ${Constants.INTENSITY_MAX} to increase the ions production during Air Purification mode or make a longer Odour Removal program.\nIncreasing the intensity values also increases the air flow rate of the product",
                       style: TextStyle(color: Colors.white, fontSize: 16, fontFamily: 'Montserrat'),
                       textAlign: TextAlign.center,
                     )
@@ -95,7 +96,7 @@ class _HelpScreenState extends State<HelpScreen> {
                 ),
                 SizedBox(height: space,),
                 Text(
-                  "values must be over 100 and \n below 5000",
+                  "values must be over ${Constants.VOLUME_MIN} and \n below ${Constants.VOLUME_MAX}",
                   style: TextStyle(color: Colors.white, fontSize: 12, fontFamily: 'Montserrat'),
                   textAlign: TextAlign.center,
                 ),

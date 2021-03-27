@@ -6,4 +6,5 @@ class Params {
   static final String operationStartedAt = "operationStartedAt";
   static final String sensorData = "sensorData";
   static final String lastDevice = "lastDevice";
+  static final String values = "values";
 }
