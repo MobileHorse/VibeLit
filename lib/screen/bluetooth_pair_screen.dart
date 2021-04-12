@@ -200,20 +200,73 @@ class _BluetoothPairScreenState extends State<BluetoothPairScreen> {
             height: 20.0,
             width: 20.0,
           ) : Container(),
-          IconCircleButton(
+          !device.isConnected ? IconCircleButton(
             icon: Icon(Icons.link, size: 24, color: Colors.white,),
             size: 24,
             padding: 8,
-            onClick: () {
-
+            onClick: () async {
+              setState(() {
+                processingDevice = device.address;
+              });
+              bool bonded = false;
+              if (device.isBonded) {
+                await FlutterBluetoothSerial.instance.removeDeviceBondWithAddress(device.address);
+                ToastUtils.showSuccessToast(context, "Unbonded device successfully.");
+                PreferenceHelper.remove(Params.lastDevice);
+                _bluetoothBloc.add(BluetoothCheckEvent());
+              } else {
+                bonded = await FlutterBluetoothSerial.instance.bondDeviceAtAddress(device.address);
+                ToastUtils.showSuccessToast(context, "Bonded device successfully");
+              }
+              setState(() {
+                results[index] = BluetoothDiscoveryResult(
+                    device: BluetoothDevice(
+                      name: device.name ?? 'Unknown',
+                      address: device.address,
+                      isConnected: false,
+                      type: device.type,
+                      bondState: bonded
+                          ? BluetoothBondState.bonded
+                          : BluetoothBondState.none,
+                    ),
+                    rssi: rssi);
+              });
             },
-          ),
-          IconCircleButton(
+          ) : Container(),
+          !device.isBonded ? Container() : IconCircleButton(
             icon: Icon(Icons.import_export, size: 24, color: Colors.white,),
             size: 24,
             padding: 8,
-            onClick: () {
-
+            onClick: () async {
+              setState(() {
+                processingDevice = device.address;
+              });
+              bool isConnected = false;
+              if (device.isConnected) {
+                if (_bluetoothBloc.state is BluetoothConnectedState) {
+                  await (_bluetoothBloc.state as BluetoothConnectedState).connection.close();
+                }
+                ToastUtils.showSuccessToast(context, "Disconnected from ${device.name ?? device.address}");
+                PreferenceHelper.remove(Params.lastDevice);
+                _bluetoothBloc.add(BluetoothCheckEvent());
+              } else {
+                BluetoothConnection connection = await BluetoothConnection.toAddress(device.address);
+                isConnected = true;
+                ToastUtils.showSuccessToast(context, "Connected to ${device.name ?? device.address}");
+                PreferenceHelper.setString(Params.lastDevice, device.address);
+                _bluetoothBloc.add(BluetoothConnectedEvent(connection: connection));
+              }
+              setState(() {
+                results[index] = BluetoothDiscoveryResult(
+                    device: BluetoothDevice(
+                      name: device.name ?? 'Unknown',
+                      address: device.address,
+                      isConnected: isConnected,
+                      type: device.type,
+                      bondState: BluetoothBondState.bonded,
+                    ),
+                    rssi: rssi);
+              });
             },
           )
         ],
